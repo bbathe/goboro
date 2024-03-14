@@ -12,6 +12,7 @@ import (
 
 	"github.com/bbathe/goboro/config"
 	"github.com/bbathe/goboro/qrz"
+	"github.com/jordan-wright/email"
 
 	"github.com/lxn/walk"
 	"github.com/lxn/walk/declarative"
@@ -66,6 +67,7 @@ func GoBoroWindow() error {
 	var leEmailTo *walk.LineEdit
 	var leSubject *walk.LineEdit
 	var teBody *walk.TextEdit
+	var pbSend *walk.PushButton
 
 	// establish qrz.com session
 	qrzClient, err = qrz.NewClient(config.QRZ.Endpoint, config.QRZ.Username, config.QRZ.Password, config.QRZ.Agent)
@@ -137,16 +139,22 @@ func GoBoroWindow() error {
 													log.Printf("%+v", err)
 													return
 												}
+
+												// populate email components
 												if call == r.Callsign.Call {
-													leEmailTo.SetText(r.Callsign.Email)
+													if len(r.Callsign.Email) > 0 {
+														leEmailTo.SetText(r.Callsign.Email)
 
-													var s bytes.Buffer
-													tmplSubject.Execute(&s, map[string]string{"callsign": r.Callsign.Call})
-													leSubject.SetText(s.String())
+														var s bytes.Buffer
+														tmplSubject.Execute(&s, map[string]string{"callsign": r.Callsign.Call})
+														leSubject.SetText(s.String())
 
-													var b bytes.Buffer
-													tmplBody.Execute(&b, map[string]string{"callsign": r.Callsign.Call})
-													teBody.SetText(b.String())
+														var b bytes.Buffer
+														tmplBody.Execute(&b, map[string]string{"callsign": r.Callsign.Call})
+														teBody.SetText(string(bytes.Replace(b.Bytes(), []byte{'\n'}, []byte{'\r', '\n'}, -1)))
+													} else {
+														MsgError(mainWin, errors.New("No email"))
+													}
 												} else {
 													MsgError(mainWin, errors.New("Callsign changed to "+r.Callsign.Email))
 												}
@@ -198,6 +206,30 @@ func GoBoroWindow() error {
 							declarative.TextEdit{
 								Text:     declarative.Bind("Body"),
 								AssignTo: &teBody,
+							},
+							declarative.PushButton{
+								AssignTo:    &pbSend,
+								Text:        "Send",
+								ToolTipText: "send email",
+								Font: declarative.Font{
+									Family:    "MS Shell Dlg 2",
+									PointSize: 9,
+								},
+								OnClicked: func() {
+									var email = email.Email{
+										From:    config.Email.From,
+										To:      []string{leEmailTo.Text()},
+										Subject: leSubject.Text(),
+										Text:    []byte(teBody.Text()),
+									}
+
+									err := email.SendWithTLS(config.Email.ServerPort, nil, nil)
+									if err != nil {
+										MsgError(mainWin, err)
+										log.Printf("%+v", err)
+										return
+									}
+								},
 							},
 						},
 					},
