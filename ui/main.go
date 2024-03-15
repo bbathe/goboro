@@ -16,6 +16,7 @@ import (
 
 	"github.com/lxn/walk"
 	"github.com/lxn/walk/declarative"
+	"github.com/lxn/win"
 )
 
 var (
@@ -115,6 +116,11 @@ func GoBoroWindow() error {
 										Text:     declarative.Bind("Call"),
 										CaseMode: declarative.CaseModeUpper,
 										AssignTo: &leCall,
+										OnKeyPress: func(key walk.Key) {
+											if key == walk.KeyReturn {
+												pbLookup.SendMessage(win.BM_CLICK, 0, 0)
+											}
+										},
 									},
 									declarative.PushButton{
 										AssignTo:    &pbLookup,
