@@ -225,6 +225,7 @@ func GoBoroWindow() error {
 									var email = email.Email{
 										From:    config.Email.From,
 										To:      []string{leEmailTo.Text()},
+										Bcc:     []string{config.Email.From},
 										Subject: leSubject.Text(),
 										Text:    []byte(teBody.Text()),
 									}
