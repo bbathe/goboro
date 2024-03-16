@@ -11,8 +11,8 @@ import (
 	"strings"
 
 	"github.com/bbathe/goboro/config"
+	"github.com/bbathe/goboro/email"
 	"github.com/bbathe/goboro/qrz"
-	"github.com/jordan-wright/email"
 
 	"github.com/lxn/walk"
 	"github.com/lxn/walk/declarative"
@@ -159,7 +159,7 @@ func GoBoroWindow() error {
 														tmplBody.Execute(&b, map[string]string{"callsign": r.Callsign.Call})
 														teBody.SetText(string(bytes.Replace(b.Bytes(), []byte{'\n'}, []byte{'\r', '\n'}, -1)))
 													} else {
-														MsgError(mainWin, errors.New("No email"))
+														MsgError(mainWin, errors.New("no email address"))
 													}
 												} else {
 													MsgError(mainWin, errors.New("Callsign changed to "+r.Callsign.Email))
@@ -222,15 +222,21 @@ func GoBoroWindow() error {
 									PointSize: 9,
 								},
 								OnClicked: func() {
-									var email = email.Email{
-										From:    config.Email.From,
-										To:      []string{leEmailTo.Text()},
-										Bcc:     []string{config.Email.From},
-										Subject: leSubject.Text(),
-										Text:    []byte(teBody.Text()),
+									//
+									// Directory (tenant) ID: 51d5aff2-f2a7-435d-b5aa-a7f3693ebb61
+									// Application (client) ID: d391e9e8-8595-41c9-bc74-75e02e887e5c
+									// Secret Value: pl68Q~vsIsNnVYCucrX6~HaRgTNj3J.huY1Kyb~Z
+									// Secret ID: a7df6321-c556-4340-b57a-470e0cab9346
+									//
+
+									c, err := email.NewClient(config.Office365AppRegistration.TenantID, config.Office365AppRegistration.ClientID, config.Office365AppRegistration.Secret)
+									if err != nil {
+										MsgError(mainWin, err)
+										log.Printf("%+v", err)
+										return
 									}
 
-									err := email.SendWithTLS(config.Email.ServerPort, nil, nil)
+									err = c.Send(config.Email.UserID, leSubject.Text(), teBody.Text(), leEmailTo.Text())
 									if err != nil {
 										MsgError(mainWin, err)
 										log.Printf("%+v", err)

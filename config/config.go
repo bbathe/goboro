@@ -16,9 +16,10 @@ var (
 	msgMissingField = "required configuration missing %s"
 
 	// unwrapped config values
-	UI    ui
-	QRZ   qrz
-	Email email
+	UI                       ui
+	QRZ                      qrz
+	Office365AppRegistration office365AppRegistration
+	Email                    email
 )
 
 type mainwinrectangle struct {
@@ -77,30 +78,50 @@ func (q *qrz) Validate() error {
 	return nil
 }
 
+type office365AppRegistration struct {
+	TenantID string
+	ClientID string
+	Secret   string
+}
+
+// Validate tests the required office365AppRegistration fields
+// doesn't log errors because you don't have to use qrz
+func (o *office365AppRegistration) Validate() error {
+	if o.TenantID == "" {
+		err := fmt.Errorf(msgMissingField, "office365AppRegistration TenantID")
+		return err
+	}
+	if o.ClientID == "" {
+		err := fmt.Errorf(msgMissingField, "office365AppRegistration ClientID")
+		return err
+	}
+	if o.Secret == "" {
+		err := fmt.Errorf(msgMissingField, "office365AppRegistration Secret")
+		return err
+	}
+
+	return nil
+}
+
 type email struct {
-	ServerPort      string
-	From            string
+	UserID          string // from user, UPN or ObjectID
 	SubjectTemplate string // QSL Bureau cards for {{ callsign }}
 	BodyTemplate    string // QSL Bureau cards for {{ callsign }}
 }
 
-// Validate tests the required qrz fields
+// Validate tests the required email fields
 // doesn't log errors because you don't have to use qrz
 func (e *email) Validate() error {
-	if e.ServerPort == "" {
-		err := fmt.Errorf(msgMissingField, "email ServerPort")
-		return err
-	}
-	if e.From == "" {
-		err := fmt.Errorf(msgMissingField, "email From")
+	if e.UserID == "" {
+		err := fmt.Errorf(msgMissingField, "office365 UserID")
 		return err
 	}
 	if e.SubjectTemplate == "" {
-		err := fmt.Errorf(msgMissingField, "email SubjectTemplate")
+		err := fmt.Errorf(msgMissingField, "office365 SubjectTemplate")
 		return err
 	}
 	if e.BodyTemplate == "" {
-		err := fmt.Errorf(msgMissingField, "email BodyTemplate")
+		err := fmt.Errorf(msgMissingField, "office365 BodyTemplate")
 		return err
 	}
 
@@ -109,14 +130,20 @@ func (e *email) Validate() error {
 
 // Configuration is the application configuration that is serialized/deserialized to file
 type Configuration struct {
-	UI    ui
-	QRZ   qrz
-	Email email
+	UI                       ui
+	QRZ                      qrz
+	Office365AppRegistration office365AppRegistration
+	Email                    email
 }
 
 // Validate tests the required Configuration fields
 func (c *Configuration) Validate() error {
 	err := c.QRZ.Validate()
+	if err != nil {
+		log.Printf("%+v", err)
+		return err
+	}
+	err = c.Office365AppRegistration.Validate()
 	if err != nil {
 		log.Printf("%+v", err)
 		return err
@@ -158,6 +185,7 @@ func Read(fname string) error {
 
 	UI = c.UI
 	QRZ = c.QRZ
+	Office365AppRegistration = c.Office365AppRegistration
 	Email = c.Email
 
 	return nil
@@ -171,9 +199,10 @@ func Write() error {
 
 	// wrap
 	c := Configuration{
-		UI:    UI,
-		QRZ:   QRZ,
-		Email: Email,
+		UI:                       UI,
+		QRZ:                      QRZ,
+		Office365AppRegistration: Office365AppRegistration,
+		Email:                    Email,
 	}
 
 	// make sure valid before proceeding
