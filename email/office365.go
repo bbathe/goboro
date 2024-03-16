@@ -151,9 +151,16 @@ func (client *Client) Send(userID, subject, body, to string) error {
 	msg := message{
 		messageType{
 			Subject: subject,
-			Body:    bodyType{ContentType: "Text", Content: body},
+			Body: bodyType{
+				ContentType: "Text",
+				Content:     body,
+			},
 			ToRecipients: []recipientType{
-				{EmailAddress: emailAddressType{Address: to}},
+				{
+					EmailAddress: emailAddressType{
+						Address: to,
+					},
+				},
 			},
 		},
 	}

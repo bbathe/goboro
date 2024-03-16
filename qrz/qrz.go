@@ -166,7 +166,7 @@ func (client *Client) makeRequest(parameters url.Values) ([]byte, error) {
 	defer response.Body.Close()
 
 	// error?
-	if response.StatusCode != http.StatusOK {
+	if !(response.StatusCode >= 200 && response.StatusCode <= 299) {
 		err = fmt.Errorf("returned status code %d ", response.StatusCode)
 		log.Printf("%+v", err)
 		return nil, err

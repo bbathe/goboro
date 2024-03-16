@@ -88,15 +88,15 @@ type office365AppRegistration struct {
 // doesn't log errors because you don't have to use qrz
 func (o *office365AppRegistration) Validate() error {
 	if o.TenantID == "" {
-		err := fmt.Errorf(msgMissingField, "office365AppRegistration TenantID")
+		err := fmt.Errorf(msgMissingField, "Office365AppRegistration TenantID")
 		return err
 	}
 	if o.ClientID == "" {
-		err := fmt.Errorf(msgMissingField, "office365AppRegistration ClientID")
+		err := fmt.Errorf(msgMissingField, "Office365AppRegistration ClientID")
 		return err
 	}
 	if o.Secret == "" {
-		err := fmt.Errorf(msgMissingField, "office365AppRegistration Secret")
+		err := fmt.Errorf(msgMissingField, "Office365AppRegistration Secret")
 		return err
 	}
 
@@ -113,15 +113,15 @@ type email struct {
 // doesn't log errors because you don't have to use qrz
 func (e *email) Validate() error {
 	if e.UserID == "" {
-		err := fmt.Errorf(msgMissingField, "office365 UserID")
+		err := fmt.Errorf(msgMissingField, "Email UserID")
 		return err
 	}
 	if e.SubjectTemplate == "" {
-		err := fmt.Errorf(msgMissingField, "office365 SubjectTemplate")
+		err := fmt.Errorf(msgMissingField, "Email SubjectTemplate")
 		return err
 	}
 	if e.BodyTemplate == "" {
-		err := fmt.Errorf(msgMissingField, "office365 BodyTemplate")
+		err := fmt.Errorf(msgMissingField, "Email BodyTemplate")
 		return err
 	}
 

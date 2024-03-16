@@ -25,8 +25,6 @@ var (
 
 	mainWin  *walk.MainWindow
 	runDll32 string
-
-	qrzClient *qrz.Client
 )
 
 func init() {
@@ -71,24 +69,26 @@ func GoBoroWindow() error {
 	var pbSend *walk.PushButton
 
 	// establish qrz.com session
-	qrzClient, err = qrz.NewClient(config.QRZ.Endpoint, config.QRZ.Username, config.QRZ.Password, config.QRZ.Agent)
+	qrzClient, err := qrz.NewClient(config.QRZ.Endpoint, config.QRZ.Username, config.QRZ.Password, config.QRZ.Agent)
 	if err != nil {
 		log.Printf("%+v", err)
 		return err
 	}
 
+	// establish office365 session
+	emailClient, err := email.Office365Client(config.Office365AppRegistration.TenantID, config.Office365AppRegistration.ClientID, config.Office365AppRegistration.Secret)
+	if err != nil {
+		log.Printf("%+v", err)
+		return err
+	}
+
+	// compile templates
 	tmplSubject, err := template.New("subject").Parse(config.Email.SubjectTemplate)
 	if err != nil {
 		log.Printf("%+v", err)
 		return err
 	}
 	tmplBody, err := template.New("body").Parse(config.Email.BodyTemplate)
-	if err != nil {
-		log.Printf("%+v", err)
-		return err
-	}
-
-	emailClient, err := email.Office365Client(config.Office365AppRegistration.TenantID, config.Office365AppRegistration.ClientID, config.Office365AppRegistration.Secret)
 	if err != nil {
 		log.Printf("%+v", err)
 		return err

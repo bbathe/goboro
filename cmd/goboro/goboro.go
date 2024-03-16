@@ -15,21 +15,9 @@ func main() {
 	// show file & location, date & time
 	log.SetFlags(log.Ldate | log.Ltime | log.Llongfile)
 
-	// process command line
-	var configFile string
-	flg := flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
-	flg.StringVar(&configFile, "config", "", "Configuration file")
-	err := flg.Parse(os.Args[1:])
-	if err != nil {
-		err := fmt.Errorf("%s\n\nUsage of %s\n  -config string\n    Configuration file", err.Error(), os.Args[0])
-		ui.MsgError(nil, err)
-		log.Fatalf("%+v", err)
-	}
-
 	// location for log file and default config are in the working directory
 	wd, err := os.Getwd()
 	if err != nil {
-		ui.MsgError(nil, err)
 		log.Fatalf("%+v", err)
 	}
 	basefn := filepath.Join(wd, "goboro")
@@ -37,11 +25,20 @@ func main() {
 	// log to file
 	f, err := os.OpenFile(basefn+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-		ui.MsgError(nil, err)
 		log.Fatalf("%+v", err)
 	}
 	defer f.Close()
 	log.SetOutput(f)
+
+	// process command line
+	var configFile string
+	flg := flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
+	flg.StringVar(&configFile, "config", "", "Configuration file")
+	err = flg.Parse(os.Args[1:])
+	if err != nil {
+		err := fmt.Errorf("%s\n\nUsage of %s\n  -config string\n    Configuration file", err.Error(), os.Args[0])
+		log.Fatalf("%+v", err)
+	}
 
 	// read config
 	var cfn string
@@ -55,7 +52,6 @@ func main() {
 
 	err = config.Read(cfn)
 	if err != nil {
-		ui.MsgError(nil, err)
 		log.Fatalf("%+v", err)
 	}
 
@@ -68,7 +64,6 @@ func main() {
 	// persist config
 	err = config.Write()
 	if err != nil {
-		ui.MsgError(nil, err)
 		log.Fatalf("%+v", err)
 	}
 }
