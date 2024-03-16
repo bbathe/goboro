@@ -4,8 +4,7 @@ on:
     branches:    
       - '**'
 jobs:
-
-  codetest_build:
+  codetest:
     name: Codetest
     runs-on: ubuntu-latest
     steps:

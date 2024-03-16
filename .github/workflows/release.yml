@@ -4,9 +4,9 @@ on:
     tags:
     - '**'
 jobs:
-
   release:
     name: Release
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Install mingw-w64
@@ -61,8 +61,9 @@ jobs:
         run: make build
 
       - name: Release
-        uses: fnkr/github-action-ghr@v1
-        env:
-          GHR_COMPRESS: zip
-          GHR_PATH: target/
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: goboro
+          path: target/
+          overwrite: true
+          compression-level: 9

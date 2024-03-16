@@ -16,7 +16,7 @@ codetest: lint vet
 
 build: default
 	mkdir -p target
-	rm -f target/$(package).exe target/$(package).log
+	rm -f target/$(package).exe
 	go get github.com/akavel/rsrc
 	go install github.com/akavel/rsrc
 	$(shell go env GOPATH)/bin/rsrc -arch amd64 -manifest $(package).manifest -ico $(package).ico -o cmd/goboro/$(package).syso
