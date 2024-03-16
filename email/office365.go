@@ -44,8 +44,8 @@ type message struct {
 	Message messageType `json:"message"`
 }
 
-// NewClient creates a new Microsoft Graph client
-func NewClient(tenantID, clientID, clientSecret string) (*Client, error) {
+// Office365Client creates a new Microsoft Office365 client
+func Office365Client(tenantID, clientID, clientSecret string) (*Client, error) {
 	accessToken, err := initializeClient(tenantID, clientID, clientSecret)
 	if err != nil {
 		log.Printf("%+v", err)
