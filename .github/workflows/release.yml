@@ -61,9 +61,7 @@ jobs:
         run: make build
 
       - name: Release
-        uses: actions/upload-artifact@v4
-        with:
-          name: goboro
-          path: target/
-          overwrite: true
-          compression-level: 9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run:
+          gh release upload ${{ github.ref_name }} target/goboro_windows_amd64.zip
