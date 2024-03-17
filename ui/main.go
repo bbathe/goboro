@@ -238,6 +238,11 @@ func GoBoroWindow() error {
 										log.Printf("%+v", err)
 										return
 									}
+
+									leCall.SetText("")
+									leEmailTo.SetText("")
+									leSubject.SetText("")
+									teBody.SetText("")
 								},
 							},
 						},
