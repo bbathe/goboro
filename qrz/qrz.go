@@ -2,6 +2,7 @@ package qrz
 
 import (
 	"bytes"
+	"encoding/json"
 	"encoding/xml"
 	"errors"
 	"fmt"
@@ -102,6 +103,15 @@ type CallsignLookupResponse struct {
 		Error  string `xml:"Error"`
 		GMTime string `xml:"GMTime"`
 	} `xml:"Session"`
+}
+
+func (clr CallsignLookupResponse) String() string {
+	b, err := json.MarshalIndent(clr, "", "  ")
+	if err != nil {
+		log.Printf("%+v", err)
+		return ""
+	}
+	return "CallsignLookupResponse" + string(b)
 }
 
 func NewClient(endpoint, username, password, agent string) (*Client, error) {
@@ -224,6 +234,8 @@ func (client *Client) CallsignLookup(callsign string) (*CallsignLookupResponse, 
 		log.Printf("%+v", err)
 		return nil, err
 	}
+
+	// log.Printf("%+v", clr)
 
 	return &clr, nil
 }
