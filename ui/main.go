@@ -207,6 +207,7 @@ func GoBoroWindow() error {
 							},
 							declarative.LineEdit{
 								Text:     declarative.Bind("EmailTo"),
+								CaseMode: declarative.CaseModeLower,
 								AssignTo: &leEmailTo,
 							},
 							declarative.Label{
