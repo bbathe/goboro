@@ -143,6 +143,10 @@ func GoBoroWindow() error {
 											PointSize: 9,
 										},
 										OnClicked: func() {
+											leEmailTo.SetText("")
+											leSubject.SetText("")
+											teBody.SetText("")
+
 											call := strings.TrimSpace(leCall.Text())
 											if len(call) > 0 {
 												r, err := qrzClient.CallsignLookup(call)
