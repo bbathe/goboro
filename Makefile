@@ -21,7 +21,7 @@ build: default
 	go install github.com/akavel/rsrc
 	$(shell go env GOPATH)/bin/rsrc -arch amd64 -manifest $(package).manifest -ico $(package).ico -o cmd/goboro/$(package).syso
 	GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CC="x86_64-w64-mingw32-gcc" go build -v -ldflags "-s -w -H=windowsgui" -o target/$(package).exe github.com/bbathe/goboro/cmd/goboro
-	zip -j target/$(package)_windows_amd64.zip target/$(package)
+	zip -j target/$(package)_windows_amd64.zip target/$(package).exe
 	go mod tidy
 
 fmt:
