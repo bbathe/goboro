@@ -168,7 +168,7 @@ func GoBoroWindow() error {
 														MsgError(mainWin, errors.New("no email address"))
 													}
 												} else {
-													MsgError(mainWin, errors.New("Callsign changed to "+r.Callsign.Email))
+													MsgError(mainWin, errors.New("callsign changed to "+r.Callsign.Call))
 												}
 											}
 										},
