@@ -114,7 +114,6 @@ func (client *Client) makeRequest(method, url string, body io.Reader) ([]byte, e
 
 	// include auth token if available
 	if client.AccessToken != nil {
-		log.Println(*client.AccessToken)
 		request.Header.Set("Authorization", fmt.Sprintf("Bearer %s", *client.AccessToken))
 	}
 
