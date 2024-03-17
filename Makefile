@@ -1,6 +1,6 @@
 package := $(shell basename `pwd`)
 
-.PHONY: default get codetest build setup fmt lint vet
+.PHONY: default get codetest build setup fmt lint vet vulncheck
 
 default: fmt codetest
 
@@ -36,3 +36,8 @@ endif
 
 vet:
 	GOOS=windows GOARCH=amd64 go vet -all ./...
+
+vulncheck:
+	go install golang.org/x/vuln/cmd/govulncheck@latest
+	GOOS=windows GOARCH=amd64 $(shell go env GOPATH)/bin/govulncheck -test ./...
+	go mod tidy
