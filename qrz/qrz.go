@@ -247,12 +247,11 @@ func (client *Client) CallsignLookup(callsign string) (*CallsignLookupResponse, 
 		return nil, err
 	}
 
-	// check for session expired & try again
-	if len(clr.Session.Error) > 0 {
-		log.Printf("%+v", clr.Session.Error)
+	// any response from the server that does not contain the Key element indicates
+	// that no valid session exists and that a re-login is required to continue
+	if len(clr.Session.Key) == 0 {
+		log.Println("refreshing session")
 
-		// any response from the server that does not contain the Key element indicates
-		// that no valid session exists and that a re-login is required to continue
 		err = client.initializeSession()
 		if err != nil {
 			log.Printf("%+v", err)
@@ -265,13 +264,13 @@ func (client *Client) CallsignLookup(callsign string) (*CallsignLookupResponse, 
 			log.Printf("%+v", err)
 			return nil, err
 		}
+	}
 
-		// don't try again
-		if len(clr.Session.Error) > 0 {
-			err = errors.New(clr.Session.Error)
-			log.Printf("%+v", err)
-			return nil, err
-		}
+	// check for session error
+	if len(clr.Session.Error) > 0 {
+		err = errors.New(clr.Session.Error)
+		log.Printf("%+v", err)
+		return nil, err
 	}
 
 	return &clr, nil
