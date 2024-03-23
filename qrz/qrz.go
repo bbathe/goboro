@@ -249,6 +249,8 @@ func (client *Client) CallsignLookup(callsign string) (*CallsignLookupResponse, 
 
 	// check for session expired & try again
 	if len(clr.Session.Error) > 0 {
+		log.Printf("%+v", clr.Session.Error)
+
 		// any response from the server that does not contain the Key element indicates
 		// that no valid session exists and that a re-login is required to continue
 		err = client.initializeSession()
