@@ -39,14 +39,14 @@ jobs:
         with:
           path: |
             /home/runner/go/bin/golangci-lint
-          key: ${{ runner.os }}-tools-gol1562
+          key: ${{ runner.os }}-tools-gol1647
           restore-keys: |
             ${{ runner.os }}-tools-
 
       - name: Install golangci-lint
         if: steps.cachebuildtools.outputs.cache-hit != 'true'
         env:
-          GOLANGCI_LINT_VERSION: v1.56.2
+          GOLANGCI_LINT_VERSION: v1.64.7
         run: |
           sudo curl --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin ${GOLANGCI_LINT_VERSION}
 

@@ -132,9 +132,9 @@ func NewClient(endpoint, username, password, agent string) (*Client, error) {
 func (client *Client) initializeSession() error {
 	// create session
 	b, err := client.makeRequest(url.Values{
-		"username": {client.username},
-		"password": {client.password},
-		"agent":    {client.agent},
+		"username": []string{client.username},
+		"password": []string{client.password},
+		"agent":    []string{client.agent},
 	})
 	if err != nil {
 		log.Printf("%+v", err)
@@ -209,7 +209,7 @@ func (client *Client) CallsignLookup(callsign string) (*CallsignLookupResponse, 
 	request := func() error {
 		// form request parameters
 		parameters := url.Values{
-			"callsign": {callsign},
+			"callsign": []string{callsign},
 		}
 
 		// include session
